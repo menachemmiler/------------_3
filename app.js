@@ -91,7 +91,7 @@ btnSearchPlayer.addEventListener("click", (e) => __awaiter(void 0, void 0, void 
             tableData.appendChild(createRow(player));
         }
         ;
-        window.location.href = "index.html#table";
+        window.location.href = window.location.href.replace("#head", "") + "#table";
         console.log(`between2022To2024= `, between2022To2024);
     }
     catch (err) {
@@ -164,7 +164,7 @@ const showSelected = () => {
             }
             ;
             //זה עוזר לנוחות של המשתמש 
-            window.location.href = "index.html#head";
+            window.location.href = window.location.href.replace("#table", "") + "#head";
         }
     }
 };
