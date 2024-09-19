@@ -43,6 +43,7 @@ const selectedDictionary = {
     "PF": { playerName: "", position: "PF", twoPercent: -1, threePercent: -1, points: -1 },
     "C": { playerName: "", position: "C", twoPercent: -1, threePercent: -1, points: -1 }
 };
+//מחפש את השחקנים שהפרטים שלהם תואמים לבחירה שלו
 btnSearchPlayer.addEventListener("click", (e) => __awaiter(void 0, void 0, void 0, function* () {
     const positionSearch = selectPosition.value;
     const twoPercentSearch = parseInt(towRange.value);
@@ -90,6 +91,7 @@ btnSearchPlayer.addEventListener("click", (e) => __awaiter(void 0, void 0, void 
             tableData.appendChild(createRow(player));
         }
         ;
+        window.location.href = "index.html#table";
         console.log(`between2022To2024= `, between2022To2024);
     }
     catch (err) {
@@ -125,38 +127,44 @@ const createRow = (player) => {
     btnChoosePlayer.textContent = `Add ${(_a = player.playerName) === null || _a === void 0 ? void 0 : _a.replace(lastName, "")} to team`;
     btnChoosePlayer.addEventListener("click", (e) => {
         selectedDictionary[player.position] = player;
-        //עובר על המילון של השחקנים הנבחרים ןממלא את הערכים שלהם בכרטסייה המתאימה לפי התפקיד שלהם
-        paragraphC.textContent, paragraphPF.textContent, paragraphPG.textContent, paragraphSF.textContent, paragraphSG.textContent = "";
-        for (let key in selectedDictionary) {
-            const current = selectedDictionary[key];
-            const twoPercentPlayer = current.twoPercent;
-            if (twoPercentPlayer !== -1) { //בודק שיש שחקן בתפקיד הנוכחי
-                const details = `
-                name: ${current.playerName}<br>
-                points: ${current.points}<br>
-                three Percent: ${current.threePercent}<br>
-                two Percent: ${current.twoPercent}`;
-                switch (selectedDictionary[key].position) {
-                    case "PG":
-                        paragraphPG.innerHTML = details;
-                        break;
-                    case "SG":
-                        paragraphSG.innerHTML = details;
-                        break;
-                    case "SF":
-                        paragraphSF.innerHTML = details;
-                        break;
-                    case "PF":
-                        paragraphPF.innerHTML = details;
-                        break;
-                    case "C":
-                        paragraphC.innerHTML = details;
-                        break;
-                }
-            }
-        }
+        showSelected();
     });
     tableCube6.appendChild(btnChoosePlayer);
     tableRow.append(tableCube1, tableCube2, tableCube3, tableCube4, tableCube5, tableCube6);
     return tableRow;
+};
+//עובר על המילון של השחקנים הנבחרים ןממלא את הערכים שלהם בכרטסייה המתאימה לפי התפקיד שלהם
+const showSelected = () => {
+    paragraphC.textContent, paragraphPF.textContent, paragraphPG.textContent, paragraphSF.textContent, paragraphSG.textContent = "";
+    for (let key in selectedDictionary) {
+        const current = selectedDictionary[key];
+        const twoPercentPlayer = current.twoPercent;
+        if (twoPercentPlayer !== -1) { //בודק שיש שחקן בתפקיד הנוכחי
+            const details = `
+            name: ${current.playerName}<br>
+            points: ${current.points}<br>
+            three Percent: ${current.threePercent}<br>
+            two Percent: ${current.twoPercent}`;
+            switch (selectedDictionary[key].position) {
+                case "PG":
+                    paragraphPG.innerHTML = details;
+                    break;
+                case "SG":
+                    paragraphSG.innerHTML = details;
+                    break;
+                case "SF":
+                    paragraphSF.innerHTML = details;
+                    break;
+                case "PF":
+                    paragraphPF.innerHTML = details;
+                    break;
+                case "C":
+                    paragraphC.innerHTML = details;
+                    break;
+            }
+            ;
+            //זה עוזר לנוחות של המשתמש 
+            window.location.href = "index.html#head";
+        }
+    }
 };
