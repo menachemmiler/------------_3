@@ -16,41 +16,89 @@ const pointsRange = document.querySelector("#pointsRange");
 const towSpan = document.querySelector("#towSpan");
 const threeSpan = document.querySelector("#threeSpan");
 const pointsSpan = document.querySelector("#pointsSpan");
+const selectPosition = document.querySelector("#selectPosition");
+const paragraphPG = document.querySelector("#PG");
+const paragraphSG = document.querySelector("#SG");
+const paragraphSF = document.querySelector("#SF");
+const paragraphPF = document.querySelector("#PF");
+const paragraphC = document.querySelector("#C");
 ;
+towSpan.textContent = towRange.value;
+threeSpan.textContent = threeRange.value;
+pointsSpan.textContent = pointsRange.value;
 towRange.addEventListener("change", (e) => {
     towSpan.textContent = towRange.value;
 });
-//רשימה של כל ההצעות שמתאימות לחיפוש
-const listOfOfer = [];
+threeRange.addEventListener("change", (e) => {
+    threeSpan.textContent = threeRange.value;
+});
+pointsRange.addEventListener("change", (e) => {
+    pointsSpan.textContent = pointsRange.value;
+});
 //מילון של כל מי שנבחר לקבוצה
 const selectedDictionary = {
     "PG": { playerName: "", position: "PG", twoPercent: -1, threePercent: -1, points: -1 },
-    "SG": { playerName: "", position: "PG", twoPercent: -1, threePercent: -1, points: -1 },
-    "SP": { playerName: "", position: "PG", twoPercent: -1, threePercent: -1, points: -1 },
-    "PF": { playerName: "", position: "PG", twoPercent: -1, threePercent: -1, points: -1 },
-    "C": { playerName: "", position: "PG", twoPercent: -1, threePercent: -1, points: -1 }
-};
-console.log(selectedDictionary);
-//פונקצייה שמקבלת אובייקט של שחקן ומוסיפה אותו לרשימת ההצעות
-const addOfer = (player) => {
-    listOfOfer.push(player);
-    //ומפעילה פונקצייה שעוברת על כל ההצעות ומציגה אותם בטבלה
+    "SG": { playerName: "", position: "SG", twoPercent: -1, threePercent: -1, points: -1 },
+    "SP": { playerName: "", position: "SP", twoPercent: -1, threePercent: -1, points: -1 },
+    "PF": { playerName: "", position: "PF", twoPercent: -1, threePercent: -1, points: -1 },
+    "C": { playerName: "", position: "C", twoPercent: -1, threePercent: -1, points: -1 }
 };
 btnSearchPlayer.addEventListener("click", (e) => __awaiter(void 0, void 0, void 0, function* () {
-}));
-//פונקצייה שמקבלת מזהה של שחקן ומעבירה אותו מרשימת ההצעות למילון של הבחירות לפי התפקיד שלו
-const selectPlayer = (id) => {
-    const player = listOfOfer.find(player => player._id === id);
-    if (player === undefined) {
-        alert("שגיאה");
+    const positionSearch = selectPosition.value;
+    const twoPercentSearch = parseInt(towRange.value);
+    const threePercentSearch = parseInt(threeRange.value);
+    const pointsSearch = parseInt(pointsRange.value);
+    if (positionSearch == "") {
+        alert("Please Choose Position To The Player");
         return;
     }
     ;
-    selectedDictionary[player.position] = player;
-    //כאן צריך להפעיל פונקצייה שמנקה את הדיב של הבחירות ועוברת מחדש על המילון וממלאת את הדיב עם הכרטיסייות בהתאם 
-};
+    const newPlayer = {
+        position: positionSearch,
+        twoPercent: twoPercentSearch,
+        threePercent: threePercentSearch,
+        points: pointsSearch
+    };
+    console.log(newPlayer);
+    try {
+        const res = yield fetch("https://nbaserver-q21u.onrender.com/api/filter", {
+            method: "POST",
+            body: JSON.stringify(newPlayer),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        });
+        console.log("res.status= ", res.status);
+        const listPlayers = yield res.json();
+        console.log(`listPlayers= `, listPlayers);
+        if (res.status != 200) {
+            alert("שגיאה");
+        }
+        ;
+        if (listPlayers.length == 0) {
+            tableData.textContent = "no resoulte";
+            return;
+        }
+        const between2022To2024 = yield listPlayers.filter((p) => { var _a, _b, _c; return ((_a = p.season) === null || _a === void 0 ? void 0 : _a.includes(2022)) || ((_b = p.season) === null || _b === void 0 ? void 0 : _b.includes(2023)) || ((_c = p.season) === null || _c === void 0 ? void 0 : _c.includes(2024)); });
+        if (between2022To2024.length == 0) {
+            tableData.textContent = "no resoulte";
+            return;
+        }
+        ;
+        tableData.textContent = "";
+        for (const player of between2022To2024) {
+            tableData.appendChild(createRow(player));
+        }
+        ;
+        console.log(`between2022To2024= `, between2022To2024);
+    }
+    catch (err) {
+        console.log("err= ", err);
+    }
+}));
 //פונקצייה שמקבלת אובייקט של הצעה ומייצרת ממנו שורה בטבלה
 const createRow = (player) => {
+    var _a;
     const tableRow = document.createElement("div");
     tableRow.className = "tableRow";
     const tableCube1 = document.createElement("div");
@@ -72,17 +120,43 @@ const createRow = (player) => {
     tableCube5.textContent = player.threePercent.toString();
     const btnChoosePlayer = document.createElement("button");
     btnChoosePlayer.className = "greenBtn";
-    btnChoosePlayer.textContent = `Add ${player.playerName} to team`;
+    const listFirstName = player.playerName.split(" ");
+    const lastName = listFirstName === null || listFirstName === void 0 ? void 0 : listFirstName.splice(listFirstName.length - 1, 1)[0];
+    btnChoosePlayer.textContent = `Add ${(_a = player.playerName) === null || _a === void 0 ? void 0 : _a.replace(lastName, "")} to team`;
+    btnChoosePlayer.addEventListener("click", (e) => {
+        selectedDictionary[player.position] = player;
+        //עובר על המילון של השחקנים הנבחרים ןממלא את הערכים שלהם בכרטסייה המתאימה לפי התפקיד שלהם
+        paragraphC.textContent, paragraphPF.textContent, paragraphPG.textContent, paragraphSF.textContent, paragraphSG.textContent = "";
+        for (let key in selectedDictionary) {
+            const current = selectedDictionary[key];
+            const twoPercentPlayer = current.twoPercent;
+            if (twoPercentPlayer !== -1) { //בודק שיש שחקן בתפקיד הנוכחי
+                const details = `
+                name: ${current.playerName}<br>
+                points: ${current.points}<br>
+                three Percent: ${current.threePercent}<br>
+                two Percent: ${current.twoPercent}`;
+                switch (selectedDictionary[key].position) {
+                    case "PG":
+                        paragraphPG.innerHTML = details;
+                        break;
+                    case "SG":
+                        paragraphSG.innerHTML = details;
+                        break;
+                    case "SF":
+                        paragraphSF.innerHTML = details;
+                        break;
+                    case "PF":
+                        paragraphPF.innerHTML = details;
+                        break;
+                    case "C":
+                        paragraphC.innerHTML = details;
+                        break;
+                }
+            }
+        }
+    });
     tableCube6.appendChild(btnChoosePlayer);
     tableRow.append(tableCube1, tableCube2, tableCube3, tableCube4, tableCube5, tableCube6);
     return tableRow;
 };
-// const testPlayer:IPlayer = {
-//     _id: "id",
-//     playerName: "name",
-//     position: "position",
-//     twoPercent: 2,
-//     threePercent: 2,
-//     points: 2
-// }
-// tableData.appendChild(createRow(testPlayer));

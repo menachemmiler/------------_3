@@ -82,6 +82,10 @@
     justify-content: space-evenly;
 }
 
+.card p{
+    font-size: large;
+}
+
 .search{
     height: 30%;
     width: 90%;
@@ -136,7 +140,7 @@ select{
 
 
 button{
-    background-color:#2ECC71;
+    background-color:#4b2ecc;
     border: none;
     color: white;
     width: 80%;
@@ -148,7 +152,7 @@ button{
 }
 
 button:active{
-    background-color:#165f34;
+    background-color:#110224;
 }
 
 
